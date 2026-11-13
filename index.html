@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Brain Dump Incinerator (Notion Purple)</title>
+<style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* 노션 퍼플(#6940A5) 메인 컨테이너 */
+  .incinerator-box {
+    width: 100%;
+    max-width: 640px;
+    background-color: #FFFFFF;
+    border: 2px solid #6940A5;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 6px 0 #37352F, 0 12px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6940A5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .privacy-badge {
+    background-color: #EAE4F2;
+    color: #6940A5;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+  }
+
+  /* 텍스트 입력 영역 */
+  .dump-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  textarea {
+    width: 100%;
+    height: 120px;
+    padding: 12px;
+    border: 2px dashed #B9A3DA;
+    border-radius: 10px;
+    background-color: #F7F4FA;
+    color: #37352F;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s, background-color 0.2s, filter 0.6s ease, opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  textarea:focus {
+    border-color: #6940A5;
+    background-color: #FFFFFF;
+  }
+
+  textarea::placeholder {
+    color: #9B9A97;
+  }
+
+  /* 보라빛으로 증발하며 사라지는 애니메이션 상태 */
+  textarea.burning {
+    background-color: #EAE4F2;
+    border-color: #6940A5;
+    color: #6940A5;
+    filter: blur(6px) brightness(1.25);
+    opacity: 0;
+    transform: translateY(-16px) scale(0.97);
+  }
+
+  /* 소각 완료 후 뜨는 안도 메시지 */
+  .ash-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #6940A5;
+    font-weight: 700;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .ash-message.visible {
+    opacity: 1;
+  }
+
+  .ash-sub {
+    font-size: 11px;
+    font-weight: 500;
+    color: #787774;
+    margin-top: 4px;
+  }
+
+  /* 노션 퍼플 3D 매트 키캡 버튼 */
+  .burn-btn {
+    width: 100%;
+    height: 54px;
+    background: linear-gradient(180deg, #7E55BA 0%, #6940A5 100%);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 
+      0 7px 0 #37352F, 
+      0 10px 15px rgba(105, 64, 165, 0.18),
+      inset 0 2px 2px rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    outline: none;
+    touch-action: manipulation;
+    transition: transform 0.06s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.06s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .burn-btn:hover {
+    background: linear-gradient(180deg, #8A62C4 0%, #7349B0 100%);
+  }
+
+  .burn-btn:active,
+  .burn-btn.pressed {
+    transform: translateY(5px);
+    box-shadow: 
+      0 2px 0 #37352F, 
+      0 4px 6px rgba(105, 64, 165, 0.15),
+      inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  }
+
+  /* 모바일 대응 */
+  @media (max-width: 480px) {
+    body { padding: 8px; }
+    .incinerator-box { padding: 12px; }
+    textarea { height: 100px; font-size: 16px; }
+    .burn-btn { height: 50px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="incinerator-box">
+    <div class="header-row">
+      <span>🧠 Mind Dump Incinerator</span>
+      <span class="privacy-badge">Not Saved • Zero Trace</span>
+    </div>
+
+    <div class="dump-wrapper">
+      <textarea id="dumpInput" placeholder="Dump your anxious thoughts, distractions, or overwhelm here... Then clear them away."></textarea>
+      <div class="ash-message" id="ashMsg">
+        <span>✨ Cleared away. Your mind is light.</span>
+        <span class="ash-sub">Take a deep breath and return to one tiny step.</span>
+      </div>
+    </div>
+
+    <button class="burn-btn" id="burnBtn" aria-label="Burn Thoughts">
+      <span>🔥 BURN THOUGHTS</span>
+    </button>
+  </div>
+
+  <script>
+    const input = document.getElementById('dumpInput');
+    const burnBtn = document.getElementById('burnBtn');
+    const ashMsg = document.getElementById('ashMsg');
+    let isBurning = false;
+
+    function burnThoughts() {
+      if (isBurning) return;
+
+      if (!input.value.trim()) {
+        input.focus();
+        return;
+      }
+
+      isBurning = true;
+      input.classList.add('burning');
+
+      setTimeout(() => {
+        input.value = '';
+        ashMsg.classList.add('visible');
+      }, 550);
+
+      setTimeout(() => {
+        ashMsg.classList.remove('visible');
+        input.classList.remove('burning');
+        isBurning = false;
+      }, 2200);
+    }
+
+    burnBtn.addEventListener('click', burnThoughts);
+
+    burnBtn.addEventListener('touchstart', () => burnBtn.classList.add('pressed'), { passive: true });
+    burnBtn.addEventListener('touchend', () => burnBtn.classList.remove('pressed'));
+
+    input.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        burnBtn.classList.add('pressed');
+        burnThoughts();
+        setTimeout(() => burnBtn.classList.remove('pressed'), 120);
+      }
+    });
+  </script>
+
+</body>
+</html>
