@@ -3,25 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Brain Dump Incinerator (Notion Purple)</title>
+<meta name="color-scheme" content="light dark">
+<title>Brain Dump Incinerator (Transparent & Dark Mode)</title>
 <style>
   * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
   }
 
-  body {
+  /* 1. html과 body 모두 투명 강제 적용 */
+  html, body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    background-color: transparent !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
     padding: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: transparent;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  /* 노션 퍼플(#6940A5) 메인 컨테이너 */
+  /* 2. 노션이 투명을 막을 경우를 대비한 다크모드 공식 배경색(#191919) 자동 매칭 */
+  @media (prefers-color-scheme: dark) {
+    html, body {
+      background-color: #191919 !important;
+    }
+  }
+
+  /* 노션 퍼플(#6940A5) 메인 컨테이너 (라이트 모드 기본) */
   .incinerator-box {
     width: 100%;
     max-width: 640px;
@@ -35,6 +51,7 @@
     gap: 12px;
     position: relative;
     overflow: hidden;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
   }
 
   .header-row {
@@ -164,6 +181,69 @@
       0 2px 0 #37352F, 
       0 4px 6px rgba(105, 64, 165, 0.15),
       inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  }
+
+  /* 🌙 노션 다크모드 전용 컬러 팔레트 자동 보정 */
+  @media (prefers-color-scheme: dark) {
+    .incinerator-box {
+      background-color: #252525;
+      border-color: #9A6DD7;
+      box-shadow: 0 6px 0 #0B0B0B, 0 12px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .header-row {
+      color: #B48EE8;
+    }
+
+    .privacy-badge {
+      background-color: #362B47;
+      color: #D2B8F8;
+    }
+
+    textarea {
+      background-color: #1F1F1F;
+      border-color: #5C4382;
+      color: #EBEBEB;
+    }
+
+    textarea:focus {
+      background-color: #191919;
+      border-color: #9A6DD7;
+    }
+
+    textarea::placeholder {
+      color: #7F7F7F;
+    }
+
+    textarea.burning {
+      background-color: #362B47;
+      border-color: #9A6DD7;
+      color: #D2B8F8;
+    }
+
+    .ash-message {
+      color: #D2B8F8;
+    }
+
+    .ash-sub {
+      color: #9B9B9B;
+    }
+
+    .burn-btn {
+      background: linear-gradient(180deg, #8B5FC9 0%, #7347B2 100%);
+      box-shadow: 
+        0 7px 0 #0B0B0B, 
+        0 10px 16px rgba(0, 0, 0, 0.45),
+        inset 0 2px 2px rgba(255, 255, 255, 0.25);
+    }
+
+    .burn-btn:active,
+    .burn-btn.pressed {
+      box-shadow: 
+        0 2px 0 #0B0B0B, 
+        0 4px 6px rgba(0, 0, 0, 0.35),
+        inset 0 1px 2px rgba(255, 255, 255, 0.15);
+    }
   }
 
   /* 모바일 대응 */
