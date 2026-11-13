@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="light dark">
-<title>Brain Dump Incinerator (Transparent & Dark Mode)</title>
+<title>Brain Dump Incinerator</title>
 <style>
   * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* 1. html과 body 모두 투명 강제 적용 */
+  /* 투명 배경 기본 및 다크모드 대응 */
   html, body {
     margin: 0;
     padding: 0;
@@ -19,7 +19,7 @@
     height: 100%;
     background: transparent !important;
     background-color: transparent !important;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   }
 
   body {
@@ -30,47 +30,59 @@
     min-height: 100vh;
   }
 
-  /* 2. 노션이 투명을 막을 경우를 대비한 다크모드 공식 배경색(#191919) 자동 매칭 */
   @media (prefers-color-scheme: dark) {
     html, body {
       background-color: #191919 !important;
     }
   }
 
-  /* 노션 퍼플(#6940A5) 메인 컨테이너 (라이트 모드 기본) */
-  .incinerator-box {
+  /* 플랫한 노션 스타일 메인 컨테이너 */
+  .incinerator-card {
     width: 100%;
-    max-width: 640px;
+    max-width: 560px;
     background-color: #FFFFFF;
-    border: 2px solid #6940A5;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 6px 0 #37352F, 0 12px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(55, 53, 47, 0.14);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
     gap: 12px;
-    position: relative;
-    overflow: hidden;
     transition: background-color 0.2s ease, border-color 0.2s ease;
   }
 
-  .header-row {
+  /* 상단 헤더 영역 (일반 텍스트 크기 볼드 타이틀 + 우측 하단 뱃지) */
+  .header-group {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .title-row {
+    display: flex;
     align-items: center;
-    font-size: 12px;
+    gap: 7px;
+    font-size: 14px; /* 노션 일반 본문 텍스트와 동일한 사이즈 */
     font-weight: 700;
-    color: #6940A5;
-    letter-spacing: 0.06em;
+    color: #37352F;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: flex-end;
   }
 
   .privacy-badge {
     background-color: #EAE4F2;
     color: #6940A5;
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
     font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   /* 텍스트 입력 영역 */
@@ -82,39 +94,39 @@
   textarea {
     width: 100%;
     height: 120px;
-    padding: 12px;
-    border: 2px dashed #B9A3DA;
-    border-radius: 10px;
-    background-color: #F7F4FA;
+    padding: 12px 14px;
+    border: 1.5px dashed rgba(105, 64, 165, 0.35);
+    border-radius: 8px;
+    background-color: #FFFFFF;
     color: #37352F;
     font-family: inherit;
     font-size: 14px;
     line-height: 1.5;
     resize: none;
     outline: none;
-    transition: border-color 0.2s, background-color 0.2s, filter 0.6s ease, opacity 0.6s ease, transform 0.6s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease, filter 0.55s ease, opacity 0.55s ease, transform 0.55s ease;
   }
 
   textarea:focus {
     border-color: #6940A5;
-    background-color: #FFFFFF;
+    background-color: #FCFAFF;
   }
 
   textarea::placeholder {
     color: #9B9A97;
   }
 
-  /* 보라빛으로 증발하며 사라지는 애니메이션 상태 */
+  /* 소각 애니메이션 (보라빛 연기로 부드럽게 사라짐) */
   textarea.burning {
     background-color: #EAE4F2;
     border-color: #6940A5;
     color: #6940A5;
-    filter: blur(6px) brightness(1.25);
+    filter: blur(5px) brightness(1.15);
     opacity: 0;
-    transform: translateY(-16px) scale(0.97);
+    transform: translateY(-10px) scale(0.98);
   }
 
-  /* 소각 완료 후 뜨는 안도 메시지 */
+  /* 소각 완료 메시지 */
   .ash-message {
     position: absolute;
     inset: 0;
@@ -136,79 +148,69 @@
   }
 
   .ash-sub {
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 400;
     color: #787774;
     margin-top: 4px;
   }
 
-  /* 노션 퍼플 3D 매트 키캡 버튼 */
+  /* 플랫 노션 퍼플 버튼 */
   .burn-btn {
     width: 100%;
-    height: 54px;
-    background: linear-gradient(180deg, #7E55BA 0%, #6940A5 100%);
+    height: 44px;
+    background-color: #6940A5;
     border: none;
-    border-radius: 12px;
-    box-shadow: 
-      0 7px 0 #37352F, 
-      0 10px 15px rgba(105, 64, 165, 0.18),
-      inset 0 2px 2px rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
     color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
     cursor: pointer;
     outline: none;
     touch-action: manipulation;
-    transition: transform 0.06s cubic-bezier(0.34, 1.56, 0.64, 1),
-                box-shadow 0.06s cubic-bezier(0.34, 1.56, 0.64, 1),
-                background 0.1s ease;
+    transition: background-color 0.15s ease, transform 0.08s ease;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
+    gap: 6px;
   }
 
   .burn-btn:hover {
-    background: linear-gradient(180deg, #8A62C4 0%, #7349B0 100%);
+    background-color: #5B3593;
   }
 
   .burn-btn:active,
   .burn-btn.pressed {
-    transform: translateY(5px);
-    box-shadow: 
-      0 2px 0 #37352F, 
-      0 4px 6px rgba(105, 64, 165, 0.15),
-      inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    transform: scale(0.985);
+    background-color: #4E2C80;
   }
 
-  /* 🌙 노션 다크모드 전용 컬러 팔레트 자동 보정 */
+  /* 🌙 노션 다크모드 컬러 매칭 */
   @media (prefers-color-scheme: dark) {
-    .incinerator-box {
-      background-color: #252525;
-      border-color: #9A6DD7;
-      box-shadow: 0 6px 0 #0B0B0B, 0 12px 24px rgba(0, 0, 0, 0.45);
+    .incinerator-card {
+      background-color: #202020;
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
     }
 
-    .header-row {
-      color: #B48EE8;
+    .title-row {
+      color: #EBEBEB;
     }
 
     .privacy-badge {
-      background-color: #362B47;
-      color: #D2B8F8;
+      background-color: #322742;
+      color: #C4A3F5;
     }
 
     textarea {
-      background-color: #1F1F1F;
-      border-color: #5C4382;
+      background-color: #191919;
+      border-color: rgba(168, 127, 232, 0.35);
       color: #EBEBEB;
     }
 
     textarea:focus {
-      background-color: #191919;
       border-color: #9A6DD7;
+      background-color: #1E1B24;
     }
 
     textarea::placeholder {
@@ -216,13 +218,13 @@
     }
 
     textarea.burning {
-      background-color: #362B47;
+      background-color: #322742;
       border-color: #9A6DD7;
       color: #D2B8F8;
     }
 
     .ash-message {
-      color: #D2B8F8;
+      color: #C4A3F5;
     }
 
     .ash-sub {
@@ -230,41 +232,42 @@
     }
 
     .burn-btn {
-      background: linear-gradient(180deg, #8B5FC9 0%, #7347B2 100%);
-      box-shadow: 
-        0 7px 0 #0B0B0B, 
-        0 10px 16px rgba(0, 0, 0, 0.45),
-        inset 0 2px 2px rgba(255, 255, 255, 0.25);
+      background-color: #8256C2;
+    }
+
+    .burn-btn:hover {
+      background-color: #9064D0;
     }
 
     .burn-btn:active,
     .burn-btn.pressed {
-      box-shadow: 
-        0 2px 0 #0B0B0B, 
-        0 4px 6px rgba(0, 0, 0, 0.35),
-        inset 0 1px 2px rgba(255, 255, 255, 0.15);
+      background-color: #7348B2;
     }
   }
 
-  /* 모바일 대응 */
+  /* 모바일 최적화 */
   @media (max-width: 480px) {
     body { padding: 8px; }
-    .incinerator-box { padding: 12px; }
+    .incinerator-card { padding: 14px; }
     textarea { height: 100px; font-size: 16px; }
-    .burn-btn { height: 50px; font-size: 13px; }
   }
 </style>
 </head>
 <body>
 
-  <div class="incinerator-box">
-    <div class="header-row">
-      <span>🧠 Mind Dump Incinerator</span>
-      <span class="privacy-badge">Not Saved • Zero Trace</span>
+  <div class="incinerator-card">
+    <div class="header-group">
+      <div class="title-row">
+        <span>🧠</span>
+        <span>MIND DUMP INCINERATOR</span>
+      </div>
+      <div class="badge-row">
+        <span class="privacy-badge">NOT SAVED • ZERO TRACE</span>
+      </div>
     </div>
 
     <div class="dump-wrapper">
-      <textarea id="dumpInput" placeholder="Dump your anxious thoughts, distractions, or overwhelm here... Then clear them away."></textarea>
+      <textarea id="dumpInput" placeholder="Dump your anxious thoughts..."></textarea>
       <div class="ash-message" id="ashMsg">
         <span>✨ Cleared away. Your mind is light.</span>
         <span class="ash-sub">Take a deep breath and return to one tiny step.</span>
@@ -272,7 +275,8 @@
     </div>
 
     <button class="burn-btn" id="burnBtn" aria-label="Burn Thoughts">
-      <span>🔥 BURN THOUGHTS</span>
+      <span>🔥</span>
+      <span>BURN THOUGHTS</span>
     </button>
   </div>
 
@@ -296,13 +300,13 @@
       setTimeout(() => {
         input.value = '';
         ashMsg.classList.add('visible');
-      }, 550);
+      }, 500);
 
       setTimeout(() => {
         ashMsg.classList.remove('visible');
         input.classList.remove('burning');
         isBurning = false;
-      }, 2200);
+      }, 2100);
     }
 
     burnBtn.addEventListener('click', burnThoughts);
